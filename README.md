@@ -1,256 +1,117 @@
-## System Architecture
+# UniPortal
 
-```mermaid
-graph TD
-    %% Class Definitions
-    classDef userStyle fill:#333,stroke:#000,stroke-width:2px,color:#fff;
-    classDef gatewayStyle fill:#E67E22,stroke:#D35400,stroke-width:2px,color:#fff;
-    classDef serviceStyle fill:#2980B9,stroke:#1C5980,stroke-width:2px,color:#fff;
-    classDef dbStyle fill:#27AE60,stroke:#1E8449,stroke-width:2px,color:#fff;
-    classDef boundaryStyle fill:#ffffff,stroke:#7F8C8D,stroke-width:2px,stroke-dasharray: 5 5,color:#2C3E50;
+Web portal for university operations: dashboards for campus services (lecturers, canteens, libraries), user registration and login, and role-specific admin or student views. This repository contains a **Next.js** web app and a **Docker-based** backend under `backend/`.
 
-    %% External User
-    User((<b>User</b>)):::userStyle
+## Repository layout
 
-    subgraph SystemBoundary ["<b>UniPortal System</b>"]
-        
-        subgraph Layer1 ["<b>Entry Point</b>"]
-            Gateway["<b>Gateway Container</b><br>Bun.js - Elysia"]:::gatewayStyle
-        end
-
-        subgraph Layer2 ["<b>Service Layer</b>"]
-            Dashboard["&nbsp;&nbsp;&nbsp;&nbsp;<b>Dashboard Service Container</b>&nbsp;&nbsp;&nbsp;&nbsp;<br>Bun.js - Elysia"]:::serviceStyle
-            Auth["&nbsp;&nbsp;&nbsp;&nbsp;<b>Auth Service Container</b>&nbsp;&nbsp;&nbsp;&nbsp;<br>Node.js - Express"]:::serviceStyle
-            Lecturer["&nbsp;&nbsp;&nbsp;&nbsp;<b>Lecturer Service Container</b>&nbsp;&nbsp;&nbsp;&nbsp;<br>Node.js - Express"]:::serviceStyle
-            Canteen["&nbsp;&nbsp;&nbsp;&nbsp;<b>Canteen Service Container</b>&nbsp;&nbsp;&nbsp;&nbsp;<br>Node.js - Express"]:::serviceStyle
-            Library["&nbsp;&nbsp;&nbsp;&nbsp;<b>Library Service Container</b>&nbsp;&nbsp;&nbsp;&nbsp;<br>Node.js - Express"]:::serviceStyle
-        end
-
-        subgraph Layer3 ["<b>Data Tier</b>"]
-            DB[("<b>MongoDB Container</b>")]:::dbStyle
-        end
-    end
-
-    %% Communication Flow
-    User -- "Request" --> Gateway
-    
-    Gateway -- "Fetches from" --> Dashboard
-    Gateway -- "Authenticates/Fetches" --> Auth
-    Gateway -- "Fetches from" --> Lecturer
-    Gateway -- "Fetches from" --> Canteen
-    Gateway -- "Fetches from" --> Library
-
-    %% Dashboard Inter-service Communication
-    Dashboard -- "Fetches from" --> Lecturer
-    Dashboard -- "Fetches from" --> Canteen
-    Dashboard -- "Fetches from" --> Library
-
-    %% Service to DB Communication
-    Auth -- "Read/Write" --> DB
-    Lecturer -- "Read/Write" --> DB
-    Canteen -- "Read/Write" --> DB
-    Library -- "Read/Write" --> DB
-
-    %% Apply Style to Boundaries
-    class SystemBoundary,Layer1,Layer2,Layer3 boundaryStyle
-
-    %% FORCING ARROW VISIBILITY
-    linkStyle default stroke:#555,stroke-width:2px;
-```
+| Path | Description |
+|------|-------------|
+| `frontend/` | Next.js application (UI) |
+| `backend/src/` | Gateway, microservices, and `docker-compose.yml` |
 
 ---
 
-## Getting Started
+## Frontend
 
-Install:
+The UI lives in **`frontend/`**. It is a [Next.js](https://nextjs.org/) **16** app using the App Router, [React](https://react.dev/) **19**, and [TypeScript](https://www.typescriptlang.org/).
 
-- Docker
-- Docker Compose
+### Stack
 
-1. Clone the repo
+- **Framework:** Next.js 16 (App Router)
+- **UI:** React 19, [Tailwind CSS](https://tailwindcss.com/) v4 (via `@tailwindcss/postcss`)
+- **Motion:** [Framer Motion](https://www.framer.com/motion/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Fonts:** [Geist](https://vercel.com/font) (Sans + Mono) via `next/font`
+- **Linting:** ESLint 9 with `eslint-config-next`
+
+### App routes
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Home dashboard; loads summary data and renders **Admin** or **Student** dashboards after login |
+| `/login` | Sign in |
+| `/register` | Create an account |
+
+### Source layout
+
+- `frontend/src/app/` — `layout.tsx`, global styles, and route segments (`page.tsx` per route)
+- `frontend/src/components/` — `AdminDashboard.tsx`, `StudentDashboard.tsx` (forms and tables that call the backend)
+
+### API usage from the browser
+
+Client components call the backend gateway over HTTP. The codebase currently targets:
+
+**`http://localhost:8080`** (path prefix **`/api/...`**).
+
+Run the Docker stack so the gateway is listening on port **8080** before using the dashboard or auth flows from the UI.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (LTS recommended; aligns with Next.js 16)
+- npm (lockfile: `frontend/package-lock.json`)
+
+### Install and run (development)
 
 ```bash
-git clone https://github.com/thaminuZs/uni-portal-microservices.git
-
-cd uni-portal-microservices/src
+cd frontend
+npm install
+npm run dev
 ```
-2. Configure Environment Variables and JWT Keys on docker-compose.yml
 
-3. Build and Start Containers
+Open [http://localhost:3000](http://localhost:3000).
+
+### Other scripts
+
 ```bash
-docker compose build
+npm run build    # production build
+npm run start    # run production server (after build)
+npm run lint     # ESLint
+```
 
+### Path alias
+
+TypeScript resolves `@/*` to `frontend/src/*` (see `frontend/tsconfig.json`).
+
+---
+
+## Backend (Docker)
+
+Services are defined in **`backend/src/docker-compose.yml`**. You need [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/).
+
+```bash
+cd backend/src
+docker compose build
 docker compose up -d
 ```
 
----
+Useful ports on the host:
 
-## API Endpoints
+| Port | Service |
+|------|---------|
+| **8080** | API gateway (what the frontend calls) |
+| **8888** | [Dozzle](https://dozzle.dev/) log viewer |
+| **28015** | MongoDB (mapped from the container’s `27017`) |
 
-### Base URL
-> localhost:5000/api
-
----
-
-### DashBoard APIs
-> /api/dashboard
-
-**Get Dashboard Info**
-> GET /api/dashboard
+Configure secrets (for example `JWT_SECRET` in Compose and in service env blocks) before any shared or production deployment.
 
 ---
 
-### Auth Service APIs
-> /api/auth
+## API surface (quick reference)
 
-**Register User**
-> POST /api/auth/register
+All routes below go through the gateway at **`http://localhost:8080`**.
 
-```json
-{
-    "name": "thami",
-    "email": "thami@mail.com",
-    "password": "123456",
-    "role": "student"
-}
-```
+| Area | Base path |
+|------|-----------|
+| Dashboard | `GET /api/dashboard` |
+| Auth | `/api/auth` (e.g. register, login) |
+| Lecturers | `/api/lecturers` |
+| Canteens | `/api/canteens` |
+| Libraries | `/api/libraries` |
 
-**Login User**
-> POST /api/auth/login
-```json
-{
-    "email": "thami@mail.com",
-    "password": "12345"
-}
-```
+For request and response shapes, inspect the individual service handlers under `backend/src/services/` or the gateway routing under `backend/src/gateway/`.
 
 ---
 
-### Lecturer Service APIs
-> /api/lecturers
+## License
 
-**Get All Lecturers**
-> GET /api/lecturers
-
-**Get Lecturer By ID**
-> GET /api/lecturers/:id
-
-**Create Lecturer**
-> POST /api/lecturers
-
-```json
-{
-  "name": "Dr. Kayanan",
-  "department": "Physical Science",
-  "email": "kayanan@vau.edu",
-  "lastSeen": "2026-05-10"
-}
-```
-
-**Update Lecturer**
-> PUT /api/lecturers/:id
-
-**Delete Lecturer**
-> DELETE /api/lecturers/:id
-
-**Mark Attendance**
-> POST /api/lecturers/:id/attendance
-
-```json
-{
-  "status": "present"
-}
-```
-
-**Get Attendance Logs**
-> GET /api/lecturers/:id/attendance
-
----
-
-### Canteen Service APIs
-> /api/canteens
-
-**Get All Canteens**
-> GET /api/canteens
-
-**Get Single Canteen**
-> GET /api/canteens/:id
-
-**Create Canteen**
-> POST /api/canteens
-
-```json
-{
-  "name": "ammachchi",
-  "menu": ["puri", "vade"],
-  "currentQueue": "mid",
-  "updatedAt": "2026-05-10T12:00:00"
-}
-```
-
-**Update Menu**
-> PATCH /api/canteens/:id/menu
-
-```json
-{
-  "menu": ["rice", "thosai"]
-}
-```
-
-**Report Queue Status**
-> POST /api/canteens/:id/queue
-
-```json
-{
-  "level": "high"
-}
-```
-
-**Get Queue History**
-> GET /api/canteens/:id/queue/logs
-
----
-
-### Library Service APIs
-> /api/libraries
-
-**Get All Libraries**
-> GET /api/libraries
-
-**Get Single Library**
-> GET /api/libraries/:id
-
-**Create Library**
-> POST /api/libraries
-
-```json
-{
-  "name": "main",
-  "capacity": 300,
-  "currentOccupancy": 100,
-  "status": "moderate",
-  "updatedAt": "2025-05-10T11:05:20"
-}
-```
-
-**Update Occupancy**
-> POST /api/libraries/:id/occupancy
-
-```json
-{
-  "count": 320
-}
-```
-
-**Get Occupancy Logs**
-> GET /api/libraries/:id/occupancy/logs
-
----
-
-### Logs Viewer
-
-_This project uses Dozzle for realtime Docker log monitoring_
-
-> localhost:8888
-
----
+Specify your license here if the project is published.
