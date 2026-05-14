@@ -1,0 +1,21 @@
+{
+  "name": "gateway",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch index.ts",
+    "start": "bun run index.ts"
+  },
+  "dependencies": {
+    "@elysiajs/jwt": "^1.4.2",
+    "elysia": "latest",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "@elysiajs/cors": "^1.4.2",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bun-types": "latest",
+    "dotenv": "^17.4.2"
+  },
+  "module": "src/index.js"
+}

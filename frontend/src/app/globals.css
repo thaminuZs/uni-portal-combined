@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sage: #5fb38a;
+  --color-sage-light: #7fd4a8;
+  --color-teal: #2a9d9a;
+  --color-teal-dark: #1f7f7c;
+  --color-cream: #faf8f4;
+  --color-slate: #3d4a5c;
+  --color-slate-light: #5c6b82;
+}
+
+:root {
+  --background: #faf8f4;
+  --foreground: #3d4a5c;
+  --sage: #5fb38a;
+  --teal: #2a9d9a;
+  --cream: #faf8f4;
+  --slate: #3d4a5c;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(42, 157, 154, 0.12);
+  border-radius: 1.5rem;
+  box-shadow:
+    0 4px 24px rgba(42, 157, 154, 0.08),
+    0 8px 32px rgba(61, 74, 92, 0.06);
+}
+
+.dark .glass-card {
+  background: rgba(74, 85, 104, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--teal) 45%, transparent) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--cream) 80%, white);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--teal) 50%, var(--sage) 25%);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--teal);
+}

@@ -1,0 +1,101 @@
+# -----------------------------------------------------------------------------
+# Uniportal — root .gitignore (Next.js frontend + Bun/Node backend services)
+# -----------------------------------------------------------------------------
+
+# --- OS ---------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# --- Environment & secrets ----------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+
+# --- Dependencies -------------------------------------------------------------
+node_modules/
+
+# --- Logs & runtime -----------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+bun-debug.log*
+
+# --- Next.js (any app directory) ----------------------------------------------
+.next/
+out/
+next-env.d.ts
+.vercel
+
+# --- Build / compile output ---------------------------------------------------
+dist/
+build/
+*.tsbuildinfo
+
+# --- Test & coverage ----------------------------------------------------------
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+
+# --- Caches & local tooling ---------------------------------------------------
+.cache/
+.turbo/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.swc/
+
+# --- Yarn Berry (PnP) ---------------------------------------------------------
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# --- Bun ----------------------------------------------------------------------
+# Local install cache (if present)
+.bun/
+
+# --- Docker / compose overrides -----------------------------------------------
+docker-compose.override.yml
+*.pid
+*.seed
+*.pid.lock
+
+# --- IDE & editors ------------------------------------------------------------
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# --- Misc ---------------------------------------------------------------------
+*.local
+tmp/
+temp/

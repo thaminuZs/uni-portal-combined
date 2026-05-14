@@ -1,0 +1,100 @@
+services:
+
+  mongo:
+    image: mongo
+    container_name: mongo_uniportal
+    command: ["mongod", "--quiet"]
+    ports:
+      - "28015:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  auth-service:
+    build: ./services/auth-service
+    ports:
+      - "4004:4004"
+    environment:
+      - PORT=4004
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/auth-db
+      - JWT_SECRET=dubass_change_this_idiot
+    depends_on:
+      - mongo
+
+  lecturer-service:
+    build: ./services/lecturer-service
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/lecturer-db
+    depends_on:
+      - mongo
+
+  canteen-service:
+    build: ./services/canteen-service
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/canteen-db
+    depends_on:
+      - mongo
+
+  library-service:
+    build: ./services/library-service
+    ports:
+      - "4003:4003"
+    environment:
+      - NODE_ENV=production
+      - PORT=4003
+      - MONGO_URI=mongodb://mongo:27017/library-db
+    depends_on:
+      - mongo
+
+  dashboard-service:
+    build: ./services/dashboard-service
+    ports:
+      - "4005:4005"
+    environment:
+      - NODE_ENV=production
+      - PORT=4005
+      - LECTURER_URL=http://lecturer-service:4002
+      - CANTEEN_URL=http://canteen-service:4001
+      - LIBRARY_URL=http://library-service:4003
+    depends_on:
+      - lecturer-service
+      - canteen-service
+      - library-service
+
+  uniportal-gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - JWT_SECRET=dubass_change_this_idiot
+      - AUTH_URL=http://auth-service:4004
+      - LECTURER_URL=http://lecturer-service:4002
+      - CANTEEN_URL=http://canteen-service:4001
+      - LIBRARY_URL=http://library-service:4003
+      - DASH_URL=http://dashboard-service:4005
+    depends_on:
+      - lecturer-service
+      - canteen-service
+      - library-service
+      - dashboard-service
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 8888:8080
+
+volumes:
+  mongo_data:

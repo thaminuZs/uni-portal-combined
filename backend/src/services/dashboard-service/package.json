@@ -1,0 +1,17 @@
+{
+  "name": "dashboard-service",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run index.ts"
+  },
+  "dependencies": {
+    "elysia": "latest"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "dotenv": "^17.4.2"
+  },
+  "module": "src/index.js"
+}
