@@ -3,7 +3,6 @@
 Welcome! This repository contains a quick, **vibe-coded frontend application** alongside a bundled backend instance, built specifically to demonstrate the capabilities of the project in a live, end-to-end environment. 
 
 **Looking for the core API or comprehensive documentation?**
-
 This repository is just for the demo. If you want to explore the production-ready code, run the standalone service, or read the full API documentation, please visit the main repository:
 
 **[https://github.com/thaminuZs/uni-portal-microservices]**
