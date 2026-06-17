@@ -1,4 +1,4 @@
-# UniPortal - Vibe-Coded Frontend Demo
+# UniPortal - Frontend Demo
 
 Welcome! This repository contains a quick, **vibe-coded frontend application** alongside a bundled backend instance, built specifically to demonstrate the capabilities of the project in a live, end-to-end environment. 
 
@@ -10,5 +10,5 @@ Welcome! This repository contains a quick, **vibe-coded frontend application** a
 
 ## Purpose of this Repo
 
-*   **Quick Prototyping:** A fast, "vibe-coded" UI to interact with the API visually.
+*   **Quick Prototyping:** A fast, vibe-coded UI to interact with the API visually.
 *   **All-in-One Demo:** Combines the frontend and a local backend instance so you can spin up the full experience with minimal setup.
